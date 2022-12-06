@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  mysql-foragesb-db:
+    image: mysql:8.0
+    container_name: container_mysql-foragesb-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: foragesb-db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - 8080:8080
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+
+
+  phpmyadmin-foragesb-db:
+    container_name: container_phpmyadmin-foragesbdb
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8085:80
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: mysql-foragesb-db
+      PMA_USER: user
+      PMA_PASSWORD: user
+    depends_on:
+      - mysql-foragesb-db
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
